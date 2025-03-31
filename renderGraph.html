@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8" />
+  <title>Salamander Contacts Graph</title>
+  <script src="https://d3js.org/d3.v6.min.js"></script>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      overflow: hidden;
+    }
+    svg {
+      width: 100vw;
+      height: 100vh;
+      background-color: #f9f9f9;
+    }
+    .link {
+      stroke: #999;
+      stroke-opacity: 0.6;
+      stroke-width: 2px;
+      marker-end: url(#arrow); /* Add arrows */
+    }
+    .node {
+      cursor: grab;
+    }
+    .node circle {
+      fill: #d4f1f9; /* Light blue for nodes */
+    }
+    .label {
+      font-size: 14px;
+      font-weight: bold; /* Make labels bold */
+      pointer-events: none;
+    }
+  </style>
+</head>
+<body>
+  <svg></svg>
+
+  <script>
+    (function () {
+      // Salamander data with names and ages
+      const nodes = [
+        { id: "sal", name: "Sal (2 yrs)" },
+        { id: "sally", name: "Sally (1 yr)" },
+        { id: "samuel", name: "Samuel (5 yrs)" },
+        { id: "sam", name: "Sam (2 yrs)" },
+        { id: "sandy", name: "Sandy (9 yrs)" },
+        { id: "squiggles", name: "Squiggles (2 yrs)" },
+        { id: "slippy", name: "Slippy (1 yr)" },
+        { id: "sammy", name: "Sammy (7 yrs)" },
+      ];
+
+      // Edges representing salamander contacts
+      const links = [
+        { source: "sal", target: "sally" },
+        { source: "sally", target: "sandy" },
+        { source: "sally", target: "samuel" },
+        { source: "samuel", target: "squiggles" },
+        { source: "sam", target: "slippy" },
+        { source: "sam", target: "sammy" },
+        { source: "sandy", target: "sal" },
+        { source: "slippy", target: "samuel" },
+        { source: "slippy", target: "sam" },
+        { source: "slippy", target: "squiggles" },
+      ];
+
+      // Set up SVG canvas
+      const width = window.innerWidth,
+        height = window.innerHeight;
+
+      const svg = d3
+        .select("svg")
+        .attr("width", width)
+        .attr("height", height);
+
+      // Define arrow marker for links with adjusted position
+      svg
+        .append("defs")
+        .append("marker")
+        .attr("id", "arrow")
+        .attr("viewBox", "0 -5 10 10")
+        .attr("refX", 28) /* Moved back from 20 to 28 */
+        .attr("refY", 0)
+        .attr("markerWidth", 6)
+        .attr("markerHeight", 6)
+        .attr("orient", "auto")
+        .append("path")
+        .attr("d", "M0,-5L10,0L0,5")
+        .attr("fill", "#999");
+
+      // Create force simulation
+      const simulation = d3
+        .forceSimulation(nodes)
+        .force(
+          "link",
+          d3.forceLink(links).id((d) => d.id).distance(150)
+        )
+        .force("charge", d3.forceManyBody().strength(-400))
+        .force("center", d3.forceCenter(width / 2, height / 2));
+
+      // Add links (edges)
+      const link = svg
+        .selectAll(".link")
+        .data(links)
+        .enter()
+        .append("line")
+        .attr("class", "link");
+
+      // Add nodes
+      const node = svg
+        .selectAll(".node")
+        .data(nodes)
+        .enter()
+        .append("g")
+        .attr("class", "node")
+        .call(
+          d3
+            .drag()
+            .on("start", dragstarted)
+            .on("drag", dragged)
+            .on("end", dragended)
+        );
+
+      // Add circles to nodes with no outline
+      node.append("circle").attr("r", 20);
+
+      // Add labels to nodes
+      node
+        .append("text")
+        .attr("class", "label")
+        .attr("dy", 4)
+        .attr("text-anchor", "middle")
+        .text((d) => d.name);
+
+      // Update positions dynamically
+      simulation.on("tick", () => {
+        link
+          .attr("x1", (d) => d.source.x)
+          .attr("y1", (d) => d.source.y)
+          .attr("x2", (d) => d.target.x)
+          .attr("y2", (d) => d.target.y);
+
+        node.attr("transform", (d) => `translate(${d.x},${d.y})`);
+      });
+
+      // Dragging functions
+      function dragstarted(event, d) {
+        if (!event.active) simulation.alphaTarget(0.3).restart();
+        d.fx = d.x;
+        d.fy = d.y;
+      }
+
+      function dragged(event, d) {
+        d.fx = event.x;
+        d.fy = event.y;
+      }
+
+      function dragended(event, d) {
+        if (!event.active) simulation.alphaTarget(0);
+        d.fx = null;
+        d.fy = null;
+      }
+    })();
+  </script>
+</body>
+</html>
