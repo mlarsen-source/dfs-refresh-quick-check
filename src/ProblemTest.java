@@ -2,58 +2,64 @@ import static org.junit.Assert.assertEquals;
 
 import java.util.Set;
 
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 public class ProblemTest {
+    Salamander sal;
+    Salamander sally;
+    Salamander samuel;
+    Salamander sam;
+    Salamander sandy;
+    Salamander squiggles;
+    Salamander slippy;
+    Salamander sammy;
+
+    @BeforeEach
+    void setup() {
+        sal = new Salamander(2);
+        sally = new Salamander(1);
+        samuel = new Salamander(5);
+        sam = new Salamander(2);
+        sandy = new Salamander(9);
+        squiggles = new Salamander(2);
+        slippy = new Salamander(1);
+        sammy = new Salamander(7);
+
+        sal.extendContacts(Set.of(sally));
+        sally.extendContacts(Set.of(sandy, samuel));
+        samuel.extendContacts(Set.of(squiggles));
+        sam.extendContacts(Set.of(slippy, sammy));
+        sandy.extendContacts(Set.of(sal));
+        squiggles.extendContacts(Set.of());
+        slippy.extendContacts(Set.of(samuel, sam, squiggles));
+        sammy.extendContacts(Set.of());
+    }
+
     @Test
     void testCountSeriousInfections() {
-        // Salamander sal = new Salamander(2);
-        // Salamander sally = new Salamander(1);
-        // Salamander samuel = new Salamander(5);
-        // Salamander sammy = new Salamander(8);
-        // Salamander sandy = new Salamander(9);
-        // Salamander squiggles = new Salamander(5);
-        // Salamander slippy = new Salamander(1);
-
-        Salamander a = new Salamander(2);
-        Salamander b = new Salamander(1);
-        Salamander c = new Salamander(5);
-        Salamander d = new Salamander(2);
-        Salamander e = new Salamander(9);
-        Salamander f = new Salamander(2);
-        Salamander g = new Salamander(1);
-        Salamander h = new Salamander(7);
-
-        a.extendContacts(Set.of(b));
-        b.extendContacts(Set.of(e, c));
-        c.extendContacts(Set.of(f));
-        d.extendContacts(Set.of(g));
-        e.extendContacts(Set.of(a));
-        f.extendContacts(Set.of());
-        g.extendContacts(Set.of(c, d, f));
-
-        int actual = Problem.countSeriousInfections(a);
+        int actual = Problem.countSeriousInfections(sal);
         assertEquals(3, actual);
 
-        actual = Problem.countSeriousInfections(b);
+        actual = Problem.countSeriousInfections(sally);
         assertEquals(3, actual);
 
-        actual = Problem.countSeriousInfections(c);
+        actual = Problem.countSeriousInfections(samuel);
         assertEquals(1, actual);
 
-        actual = Problem.countSeriousInfections(d);
+        actual = Problem.countSeriousInfections(sam);
         assertEquals(3, actual);
 
-        actual = Problem.countSeriousInfections(e);
+        actual = Problem.countSeriousInfections(sandy);
         assertEquals(3, actual);
 
-        actual = Problem.countSeriousInfections(f);
+        actual = Problem.countSeriousInfections(squiggles);
         assertEquals(1, actual);
 
-        actual = Problem.countSeriousInfections(g);
+        actual = Problem.countSeriousInfections(slippy);
         assertEquals(3, actual);
 
-        actual = Problem.countSeriousInfections(h);
+        actual = Problem.countSeriousInfections(sammy);
         assertEquals(0, actual);
     }
 }
