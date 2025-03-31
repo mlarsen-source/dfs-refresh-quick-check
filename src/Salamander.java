@@ -17,6 +17,10 @@ public class Salamander {
         contacts.add(other);
     }
 
+    public void extendContacts(Set<Salamander> others) {
+        contacts.addAll(others);
+    }
+
     public void removeContact(Salamander other) {
         contacts.remove(other);
     }
